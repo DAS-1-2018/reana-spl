@@ -112,17 +112,14 @@ class ParamModel {
 	@Override
 	public String toString() {
 		String params = "";
+		// Formata params
 		for (String parameter : parameters) {
 			params += "param double "+parameter+";\n";
 		}
-		String module =
-				"dtmc\n" +
-				"\n" +
-				params +
-				"\n" +
-				"module " + moduleName + "\n" +
-				"	"+stateVariable+ " : ["+stateRangeStart+".."+stateRangeEnd+"] init "+initialState+";" +
-				"\n";
+		
+		// cria os modulos a partir de parametros e states
+		String module = formatterStringModule(params);
+				
 		for (Command command : commands.values()) {
 			module += "	"+command.makeString(stateVariable) + "\n";
 		}
@@ -143,6 +140,16 @@ class ParamModel {
 			module += ";\n";
 		}
 		return module;
+	}
+	
+	private String formatterStringModule(String parameters) {
+		String params = parameters;
+		params = "dtmc\n" +
+				"\n" + params + "\n" +
+				"module " + moduleName + "\n" +
+				"	"+stateVariable+ " : ["+stateRangeStart+".."+stateRangeEnd+"] init "+initialState+";" +
+				"\n";
+		return params;
 	}
 }
 
