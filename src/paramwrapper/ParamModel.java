@@ -112,18 +112,18 @@ class ParamModel {
 	@Override
 	public String toString() {
 		String params = "";
-		// Formata params
 		for (String parameter : parameters) {
 			params += "param double "+parameter+";\n";
 		}
 		
-		// cria os modulos a partir de parametros e states
 		String module = formatterStringModule(params);
-				
-		for (Command command : commands.values()) {
-			module += "	"+command.makeString(stateVariable) + "\n";
-		}
-		module += "endmodule\n\n";
+		module = formatterWithCommands(module);
+		module = formartterWithLabel(module);
+		
+		return module;
+	}
+	
+	private String formartterWithLabel(String module) {
 		for (Map.Entry<String, Set<Integer>> entry : labels.entrySet()) {
 			String label = entry.getKey();
 			module += "label \""+label+"\" = ";
@@ -139,6 +139,14 @@ class ParamModel {
 			}
 			module += ";\n";
 		}
+		return module;
+	}
+	
+	private String formatterWithCommands(String module) {
+		for (Command command : commands.values()) {
+			module += "	"+command.makeString(stateVariable) + "\n";
+		}
+		module += "endmodule\n\n";
 		return module;
 	}
 	
