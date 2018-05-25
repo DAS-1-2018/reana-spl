@@ -157,8 +157,8 @@ public class ParamWrapper implements ParametricModelChecker {
 		}
 		List<String> lines = Files.readAllLines(Paths.get(resultsPath), Charset.forName("UTF-8"));
 		lines.removeIf(String::isEmpty);
-		// Formula
-		return lines.get(lines.size()-1);
+		String formula = lines.get(lines.size()-1); 
+		return formula;
 	}
 
 }
