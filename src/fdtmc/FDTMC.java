@@ -153,7 +153,16 @@ public class FDTMC {
 	 * @param error Error state of the interface.
 	 */
 	public Interface createInterface(String id, State initial, State success, State error) {
-	    Transition successTransition = createTransition(initial, success, "", id);
+	    Interface newInterface = InitializeInterface(id, initial, success, error);
+
+	    List<Interface> interfaceOccurrences = null;
+	    interfaceOccurrences = manageInterfaceOccurencesID(id, interfaceOccurrences);
+	    interfaceOccurrences.add(newInterface);
+	    return newInterface;
+	}
+
+	private Interface InitializeInterface(String id, State initial, State success, State error) {
+		Transition successTransition = createTransition(initial, success, "", id);
 	    Transition errorTransition = createTransition(initial, error, "", "1 - " + id);
 	    Interface newInterface = new Interface(id,
 	                                           initial,
@@ -161,11 +170,7 @@ public class FDTMC {
 	                                           error,
 	                                           successTransition,
 	                                           errorTransition);
-
-	    List<Interface> interfaceOccurrences = null;
-	    interfaceOccurrences = manageInterfaceOccurencesID(id, interfaceOccurrences);
-	    interfaceOccurrences.add(newInterface);
-	    return newInterface;
+		return newInterface;
 	}
 	
 	private List<Interface> manageInterfaceOccurencesID (String id, List<Interface> interfaceOccurrences){
