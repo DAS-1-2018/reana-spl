@@ -60,39 +60,40 @@ public class ParamWrapper implements ParametricModelChecker {
 
 	private String evaluate(String modelString, String property, ParamModel model) {
 		try {
+		    LOGGER.finer(modelString);
 			File modelFile = File.createTempFile("model", "param");
-		    managerModelFile(modelString, modelFile);
-
+			managerModelFile(modelString, modelFile);
+			
 			File propertyFile = File.createTempFile("property", "prop");
-			managerPropertyFile(modelString, propertyFile);
+			managerPropertyFile(property, propertyFile);
 			
 			File resultsFile = File.createTempFile("result", null);
-			
+
 			String formula;
 			long startTime = System.nanoTime();
 			if (usePrism && !modelString.contains("const")) {
 			    formula = invokeModelChecker(modelFile.getAbsolutePath(),
-			    		propertyFile.getAbsolutePath(),
-			    		resultsFile.getAbsolutePath());
+			                                 propertyFile.getAbsolutePath(),
+			                                 resultsFile.getAbsolutePath());
 			} else if(usePrism) {
 			    formula = invokeParametricPRISM(model,
-			    		modelFile.getAbsolutePath(),
-			    		propertyFile.getAbsolutePath(),
-			    		resultsFile.getAbsolutePath());
+			                                    modelFile.getAbsolutePath(),
+                                                propertyFile.getAbsolutePath(),
+                                                resultsFile.getAbsolutePath());
 			} else {
 			    formula = invokeParametricModelChecker(modelFile.getAbsolutePath(),
-			    		propertyFile.getAbsolutePath(),
-			    		resultsFile.getAbsolutePath());
+			                                           propertyFile.getAbsolutePath(),
+			                                           resultsFile.getAbsolutePath());
 			}
 			long elapsedTime = System.nanoTime() - startTime;
-	        modelCollector.collectModelCheckingTime(elapsedTime);
+            modelCollector.collectModelCheckingTime(elapsedTime);
 			return formula.trim().replaceAll("\\s+", "");
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, e.toString(), e);
 		}
 		return "";
 	}
-
+	
 	private static void managerModelFile (String modelString, File modelFile) throws IOException {
 		LOGGER.finer(modelString);
 		FileWriter modelWriter = new FileWriter(modelFile);
@@ -107,7 +108,7 @@ public class ParamWrapper implements ParametricModelChecker {
 		propertyWriter.flush();
 		propertyWriter.close();
 	}
-		
+	
 	private String invokeParametricModelChecker(String modelPath,
 												String propertyPath,
 												String resultsPath) throws IOException {
@@ -156,8 +157,8 @@ public class ParamWrapper implements ParametricModelChecker {
 		}
 		List<String> lines = Files.readAllLines(Paths.get(resultsPath), Charset.forName("UTF-8"));
 		lines.removeIf(String::isEmpty);
-		String formula = lines.get(lines.size()-1); 
-		return formula;
+		// Formula
+		return lines.get(lines.size()-1);
 	}
 
 }
