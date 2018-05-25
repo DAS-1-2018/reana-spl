@@ -90,7 +90,8 @@ public class ADReader {
 		List<org.w3c.dom.Node> adList = new ArrayList<org.w3c.dom.Node>();
 		NodeList nodes = this.doc.getElementsByTagName("packagedElement");
 		for (int i = 0; i < nodes.getLength(); i++) {
-			if (nodes.item(i).getAttributes().getNamedItem("xmi:type") != null) {
+			boolean nameItemNodeIsValid = nodes.item(i).getAttributes().getNamedItem("xmi:type") != null;
+			if (nameItemNodeIsValid) {
 				String xmiType = nodes.item(i).getAttributes().getNamedItem("xmi:type")
 						.getTextContent();
 				if (xmiType != null && xmiType.equals("uml:Activity")) {
@@ -113,7 +114,8 @@ public class ADReader {
 		for (int s = 0; s < elements.getLength(); s++) {
 			if (elements.item(s).getNodeName().equals("node")) {
 				Activity tmp;
-				if (elements.item(s).getAttributes().getNamedItem("name") != null) {
+				boolean nameItemElementIsValid = elements.item(s).getAttributes().getNamedItem("name") != null;
+				if (nameItemElementIsValid) {
 					tmp = new Activity(elements.item(s).getAttributes().getNamedItem("xmi:id")
 							.getTextContent(), elements.item(s).getAttributes()
 							.getNamedItem("name").getTextContent(), elements.item(s)
