@@ -60,39 +60,32 @@ public class ParamWrapper implements ParametricModelChecker {
 
 	private String evaluate(String modelString, String property, ParamModel model) {
 		try {
-		    LOGGER.finer(modelString);
 			File modelFile = File.createTempFile("model", "param");
-			FileWriter modelWriter = new FileWriter(modelFile);
-			modelWriter.write(modelString);
-			modelWriter.flush();
-			modelWriter.close();
+		    managerModelFile(modelString, modelFile);
 
 			File propertyFile = File.createTempFile("property", "prop");
-			FileWriter propertyWriter = new FileWriter(propertyFile);
-			propertyWriter.write(property);
-			propertyWriter.flush();
-			propertyWriter.close();
-
+			managerPropertyFile(modelString, propertyFile);
+			
 			File resultsFile = File.createTempFile("result", null);
-
+			
 			String formula;
 			long startTime = System.nanoTime();
 			if (usePrism && !modelString.contains("const")) {
 			    formula = invokeModelChecker(modelFile.getAbsolutePath(),
-			                                 propertyFile.getAbsolutePath(),
-			                                 resultsFile.getAbsolutePath());
+			    		propertyFile.getAbsolutePath(),
+			    		resultsFile.getAbsolutePath());
 			} else if(usePrism) {
 			    formula = invokeParametricPRISM(model,
-			                                    modelFile.getAbsolutePath(),
-                                                propertyFile.getAbsolutePath(),
-                                                resultsFile.getAbsolutePath());
+			    		modelFile.getAbsolutePath(),
+			    		propertyFile.getAbsolutePath(),
+			    		resultsFile.getAbsolutePath());
 			} else {
 			    formula = invokeParametricModelChecker(modelFile.getAbsolutePath(),
-			                                           propertyFile.getAbsolutePath(),
-			                                           resultsFile.getAbsolutePath());
+			    		propertyFile.getAbsolutePath(),
+			    		resultsFile.getAbsolutePath());
 			}
 			long elapsedTime = System.nanoTime() - startTime;
-            modelCollector.collectModelCheckingTime(elapsedTime);
+	        modelCollector.collectModelCheckingTime(elapsedTime);
 			return formula.trim().replaceAll("\\s+", "");
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, e.toString(), e);
@@ -100,6 +93,21 @@ public class ParamWrapper implements ParametricModelChecker {
 		return "";
 	}
 
+	private static void managerModelFile (String modelString, File modelFile) throws IOException {
+		LOGGER.finer(modelString);
+		FileWriter modelWriter = new FileWriter(modelFile);
+		modelWriter.write(modelString);
+		modelWriter.flush();
+		modelWriter.close();
+	}
+	
+	private static void managerPropertyFile(String property, File propertyFile) throws IOException {
+		FileWriter propertyWriter = new FileWriter(propertyFile);
+		propertyWriter.write(property);
+		propertyWriter.flush();
+		propertyWriter.close();
+	}
+		
 	private String invokeParametricModelChecker(String modelPath,
 												String propertyPath,
 												String resultsPath) throws IOException {
@@ -148,8 +156,8 @@ public class ParamWrapper implements ParametricModelChecker {
 		}
 		List<String> lines = Files.readAllLines(Paths.get(resultsPath), Charset.forName("UTF-8"));
 		lines.removeIf(String::isEmpty);
-		// Formula
-		return lines.get(lines.size()-1);
+		String formula = lines.get(lines.size()-1); 
+		return formula;
 	}
 
 }
